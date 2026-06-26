@@ -5,6 +5,7 @@ use std::str::FromStr;
 
 use crate::ValidationError;
 
+use smol_str::{SmolStr, ToSmolStr};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -30,7 +31,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 /// ```
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
-pub struct TypeIdPrefix(String);
+pub struct TypeIdPrefix(SmolStr);
 
 #[cfg(feature = "serde")]
 impl Serialize for TypeIdPrefix {
@@ -237,7 +238,7 @@ impl TypeIdPrefix {
             return Err(ValidationError::ContainsInvalidCharacters);
         }
 
-        Ok(Self(input.to_string()))
+        Ok(Self(input.to_smolstr()))
     }
 
     pub(crate) fn clean_inner(input: &str) -> String {
@@ -273,7 +274,7 @@ impl TypeIdPrefix {
     /// assert_eq!(prefix.as_str(), "valid_prefix");
     /// ```
     #[must_use]
-    pub const fn as_str(&self) -> &str {
+    pub fn as_str(&self) -> &str {
         self.0.as_str()
     }
 }
